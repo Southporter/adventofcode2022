@@ -11,3 +11,6 @@
 
 (println "Day 2 Star 1: " (day2/star1))
 (println "Day 2 Star 2: " (day2/star2))
+
+(println "Day 3 Star 1: " (day3/star1))
+(println "Day 3 Star 2: " (day3/star2))
