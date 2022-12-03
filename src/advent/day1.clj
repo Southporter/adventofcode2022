@@ -1,13 +1,9 @@
 (ns advent.day1
   (:require [clojure.string :as str])
   (:require [clojure.edn :as edn])
+  (:require [advent.utils :as utils])
 )
 
-(defn get-input-as-str [file] 
-  (slurp 
-    (clojure.core/str "inputs/" file ".txt")
-  )
-)
 
 (defn count-calories [elf] 
   (reduce + 
@@ -16,11 +12,11 @@
 
 (defn part1 [] 
   (let 
-    [input (get-input-as-str "day1")]
+    [input (utils/get-input-as-str "day1")]
     (apply max (map count-calories (clojure.string/split input #"\n\n")
     ))))
 
-(def calories (map count-calories (str/split (get-input-as-str "day1") #"\n\n")))
+(def calories (map count-calories (str/split (utils/get-input-as-str "day1") #"\n\n")))
 (println calories)
 (def max-calories (apply clojure.core/max calories))
 (println max-calories)
