@@ -62,15 +62,8 @@
 
 (def bags (str/split-lines (utils/get-input-as-str "day3")))
 
-(defn split-groups 
-  ([bags] (split-groups bags '()))
-  ([bags groups] (if (empty? bags) groups (recur (drop 3 bags) (cons (take 3 bags) groups))))
-
-
-  )
-
 (if (empty? bags) 1 2)
-(def groups (split-groups '("vJrwpWtwJgWrhcsFMMfFFhFp"
+(def groups (utils/split-groups '("vJrwpWtwJgWrhcsFMMfFFhFp"
 "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL"
 "PmmdzqPrVvPwwTWBwg"
                  "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn"
@@ -82,7 +75,7 @@
 
 (defn star2 []
   (let [input (utils/get-input-as-str "day3")
-        groups (split-groups (str/split-lines input))]
+        groups (utils/split-groups (str/split-lines input))]
      (reduce + (map get-value (map find-badge groups)))
     )
   )
