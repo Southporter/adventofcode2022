@@ -12,7 +12,7 @@
 )
 (split-range "2-4")
 
-(defn contains? [r1 r2]
+(defn in-range? [r1 r2]
   (let [min1 (first r1)
         max1 (second r1)
         min2 (first r2)
@@ -28,7 +28,7 @@
         assign2 (split-range (second group))
         ]
     (if 
-      (contains? assign1 assign2)
+      (in-range? assign1 assign2)
       1 0
   )
   )
