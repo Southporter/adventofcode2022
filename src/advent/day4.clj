@@ -69,6 +69,17 @@
   )
 )
 
+(defn check-overlap [group]
+  (let [assign1 (split-range (first group))
+        assign2 (split-range (second group))
+        ]
+    (if 
+      (overlaps? assign1 assign2)
+      1 0
+  )
+  )
+  )
+
 (<= 2 9 7)
 (map check-overlap (list
                    (list "2-4" "6-8")
@@ -79,3 +90,15 @@
                    (list "2-6" "4-8")
                  )
                )
+
+(defn star2 [] 
+  (let [input (utils/get-input-as-str "day4")
+        ]
+    (->> input 
+         (str/split-lines)
+         (map #(str/split % #","))
+         (map check-overlap)
+         (reduce +)
+    )
+  )
+)
