@@ -6,6 +6,7 @@
   (:require [advent.day4 :as day4])
   (:require [advent.day5 :as day5])
   (:require [advent.day6 :as day6])
+  (:require [advent.day7 :as day7])
 )
 
 
@@ -26,3 +27,6 @@
 
 (println "Day 6 Star 1: " (day6/star1))
 (println "Day 6 Star 2: " (day6/star2))
+
+(println "Day 7 Star 1: " (day7/star1))
+(println "Day 7 Star 2: " (day7/star2))

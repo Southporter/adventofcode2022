@@ -6,5 +6,7 @@ pkgs.mkShell {
     pkgs.clojure-lsp
     pkgs.clj-kondo
     pkgs.tree-sitter-grammars.tree-sitter-clojure
+
+    pkgs.python311
   ];
 }
