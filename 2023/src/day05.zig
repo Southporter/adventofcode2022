@@ -95,7 +95,21 @@ fn part1(input: []const u8, allocator: std.mem.Allocator) !usize {
     return min_loc;
 }
 
+fn updatePartition(partition: []u64, mappings: *std.ArrayList(Mapping)) void {
+    for (partition) |*seed| {
+        seed.* = followMap(seed.*, mappings);
+    }
+}
+
+const PartitionArgs = struct {
+    partition: []u64,
+    mappings: *std.ArrayList(Mapping),
+};
+
 fn part2(input: []const u8, allocator: std.mem.Allocator) !usize {
+    const num_jobs: u32 = 16;
+    var pool: [16]std.Thread = undefined;
+
     var sections = std.mem.splitSequence(u8, input, "\n\n");
     var seed_list = try std.ArrayList(u64).initCapacity(allocator, 10000000000);
     defer seed_list.deinit();
@@ -112,8 +126,22 @@ fn part2(input: []const u8, allocator: std.mem.Allocator) !usize {
         mappings.clearRetainingCapacity();
         const header = try parseMap(section, &mappings);
         std.debug.print("Updating seeds for {s}\n", .{header});
-        for (seeds, 0..) |seed, i| {
-            seeds[i] = followMap(seed, &mappings);
+
+        const partition_size = seeds.len / num_jobs;
+        for (0..num_jobs) |i| {
+            const start = partition_size * i;
+            var end = partition_size * (i + 1);
+            if (i == num_jobs - 1) {
+                end = seeds.len;
+            }
+            const partition = seeds[start..end];
+            pool[i] = try std.Thread.spawn(.{}, updatePartition, .{
+                partition,
+                &mappings,
+            });
+        }
+        for (0..num_jobs) |i| {
+            std.Thread.join(pool[i]);
         }
         // std.debug.print("seeds after {s} {d}\n", .{ header, seeds });
     }
