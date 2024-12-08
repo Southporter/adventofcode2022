@@ -4,6 +4,7 @@ const log = std.log.scoped(.day07);
 
 const test_data =
     \\190: 10 19
+    \\180: 5 10 18
     \\3267: 81 40 27
     \\83: 17 5
     \\156: 15 6
@@ -55,11 +56,11 @@ pub fn main() !void {
 
 fn checkEquation(total: u64, nums: []u16) bool {
     var ops = std.bit_set.IntegerBitSet(16).initEmpty();
-    const max = std.math.pow(u16, 2, @truncate(nums.len));
+    const max = std.math.pow(u16, 2, @truncate(nums.len - 1));
 
     while (ops.mask < max) : (ops.mask += 1) {
-        var current: u64 = 0;
-        for (nums, 0..) |num, i| {
+        var current: u64 = nums[0];
+        for (nums[1..], 0..) |num, i| {
             current = if (ops.isSet(i)) current + num else current * num;
 
             if (current > total) {
