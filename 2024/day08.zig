@@ -22,20 +22,20 @@ const test_data =
 ;
 
 const easy_test_data =
+    \\T....#....
+    \\...T......
+    \\.T....#...
+    \\.........#
+    \\..#.......
     \\..........
+    \\...#......
     \\..........
-    \\..........
-    \\....a.....
-    \\........a.
-    \\.....a....
-    \\..........
-    \\..........
-    \\..........
+    \\....#.....
     \\..........
     \\
 ;
 const actual_data = @embedFile("./day08.txt");
-const data = actual_data;
+const data = easy_test_data;
 
 const Matrix = struct {
     rows: usize,
@@ -48,6 +48,7 @@ const Matrix = struct {
         const stride = cols + 1;
         const rows = data.len / stride;
 
+        log.info("Have rows: {d} and cols: {d}", .{ rows, cols });
         return .{ .rows = rows, .cols = cols, .stride = stride, .buf = buf };
     }
 
@@ -83,6 +84,7 @@ const Coord = struct {
 pub fn main() !void {
     var matrix = Matrix.init(data);
     var antinodes = [_]bool{false} ** data.len;
+    var antinodes2 = [_]bool{false} ** data.len;
 
     for (data, 0..) |cell, index| {
         if (cell == '.' or cell == '\n') continue;
@@ -96,7 +98,7 @@ pub fn main() !void {
             const row_dist = second.row - first.row;
             const col_dist = second.col - first.col;
 
-            const before = Coord{
+            var before = Coord{
                 .row = first.row - row_dist,
                 .col = first.col - col_dist,
             };
@@ -104,7 +106,12 @@ pub fn main() !void {
             if (matrix.inBounds(before)) {
                 antinodes[matrix.calcIndex(before)] = true;
             }
-            const after = Coord{
+            while (matrix.inBounds(before)) {
+                antinodes2[matrix.calcIndex(before)] = true;
+                before.row -= row_dist;
+                before.col -= col_dist;
+            }
+            var after = Coord{
                 .row = second.row + row_dist,
                 .col = second.col + col_dist,
             };
@@ -112,12 +119,18 @@ pub fn main() !void {
             if (matrix.inBounds(after)) {
                 antinodes[matrix.calcIndex(after)] = true;
             }
+            while (matrix.inBounds(after)) {
+                antinodes2[matrix.calcIndex(after)] = true;
+                after.row += row_dist;
+                after.col += col_dist;
+            }
         }
     }
     var count: usize = 0;
     std.debug.print("Map:  ", .{});
     for (antinodes, 0..) |node, i| {
         if (node) count += 1;
+
         if (node) {
             std.debug.print("#", .{});
         } else {
@@ -130,5 +143,20 @@ pub fn main() !void {
     }
 
     const stdout = std.io.getStdOut().writer();
-    try stdout.print("Antinodes: {d}\n", .{count});
+    try stdout.print("Antinodes: {d} (should be 364)\n", .{count});
+    var count2: usize = 0;
+    std.debug.print("Map:  ", .{});
+    for (antinodes2, 0..) |node, i| {
+        if (node) count2 += 1;
+        if (node) {
+            std.debug.print("#", .{});
+        } else {
+            if (data[i] == '\n') {
+                std.debug.print("\n      ", .{});
+            } else {
+                std.debug.print("{c}", .{data[i]});
+            }
+        }
+    }
+    try stdout.print("Antinodes (part2): {d} (should be 1231)\n", .{count2});
 }
