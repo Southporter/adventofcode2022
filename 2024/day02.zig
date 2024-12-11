@@ -10,7 +10,7 @@ const test_data =
     \\1 3 6 7 9
 ;
 
-const actual_data = @embedFile("./day02.txt");
+const actual_data = @embedFile("./data/day02.txt");
 const data = actual_data;
 // const data = test_data;
 

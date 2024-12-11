@@ -11,7 +11,7 @@ const test_input =
     \\3   3
     \\
 ;
-const actual_input = @embedFile("./day01.txt");
+const actual_input = @embedFile("./data/day01.txt");
 const input = actual_input;
 
 const Pair = struct {

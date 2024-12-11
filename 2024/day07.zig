@@ -14,7 +14,7 @@ const test_data =
     \\292: 11 6 16 20
 ;
 
-const actual_data = @embedFile("./day07.txt");
+const actual_data = @embedFile("./data/day07.txt");
 // const data = test_data;
 const data = actual_data;
 
@@ -22,6 +22,7 @@ pub fn main() !void {
     var lines = std.mem.splitScalar(u8, data, '\n');
 
     var result1: u64 = 0;
+    var result2: u64 = 0;
     while (lines.next()) |line| {
         if (line.len == 0) {
             continue;
@@ -43,9 +44,13 @@ pub fn main() !void {
         if (checkEquation(res, operands[0..count])) {
             result1 += res;
         }
+        if (checkPart2(res, operands[1..count], 0, operands[0])) {
+            result2 += res;
+        }
     }
 
     log.warn("Result1: {}", .{result1});
+    log.warn("Result2: {}", .{result2});
 }
 
 fn checkEquation(total: u64, nums: []u16) bool {
@@ -72,4 +77,17 @@ fn checkEquation(total: u64, nums: []u16) bool {
         }
     }
     return false;
+}
+
+fn concat(a: u64, b: u64) u64 {
+    var pow: u64 = 10;
+    while (b >= pow) : (pow *= 10) {}
+    return a * pow + b;
+}
+
+fn checkPart2(total: u64, nums: []const u16, index: usize, current: u64) bool {
+    if (index == nums.len) return current == total;
+    if (current > total) return false;
+
+    return checkPart2(total, nums, index + 1, current + nums[index]) or checkPart2(total, nums, index + 1, current * nums[index]) or checkPart2(total, nums, index + 1, concat(current, nums[index]));
 }

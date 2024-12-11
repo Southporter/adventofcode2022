@@ -1,5 +1,8 @@
 const std = @import("std");
 const log = std.log.scoped(.day08);
+const utils = @import("utils.zig");
+const Coord = utils.Coord(isize);
+const Matrix = utils.Matrix(isize);
 
 pub const std_options = .{
     .log_level = .debug,
@@ -34,52 +37,8 @@ const easy_test_data =
     \\..........
     \\
 ;
-const actual_data = @embedFile("./day08.txt");
+const actual_data = @embedFile("./data/day08.txt");
 const data = actual_data;
-
-const Matrix = struct {
-    rows: usize,
-    cols: usize,
-    stride: usize,
-    buf: []const u8,
-
-    pub fn init(buf: []const u8) Matrix {
-        const cols = std.mem.indexOf(u8, data, "\n").?;
-        const stride = cols + 1;
-        const rows = data.len / stride;
-
-        log.info("Have rows: {d} and cols: {d}", .{ rows, cols });
-        return .{ .rows = rows, .cols = cols, .stride = stride, .buf = buf };
-    }
-
-    pub fn calcIndex(mat: Matrix, coord: Coord) usize {
-        std.debug.assert(mat.inBounds(coord));
-        const row: usize = @intCast(coord.row);
-        const col: usize = @intCast(coord.col);
-        return row * mat.stride + col;
-    }
-
-    pub fn getCoord(mat: Matrix, index: usize) Coord {
-        return .{ .row = @intCast(index / mat.stride), .col = @intCast(index % mat.stride) };
-    }
-
-    pub inline fn rowInBounds(mat: Matrix, row: isize) bool {
-        return row >= 0 and row < mat.rows;
-    }
-
-    pub inline fn colInBounds(mat: Matrix, col: isize) bool {
-        return col >= 0 and col < mat.cols;
-    }
-
-    pub fn inBounds(mat: Matrix, coord: Coord) bool {
-        return mat.rowInBounds(coord.row) and mat.colInBounds(coord.col);
-    }
-};
-
-const Coord = struct {
-    row: isize,
-    col: isize,
-};
 
 pub fn main() !void {
     var matrix = Matrix.init(data);

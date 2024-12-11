@@ -3,7 +3,7 @@ const log = std.log.scoped(.day09);
 
 const test_data = "2333133121414131402";
 
-const actual_data = @embedFile("./day09.txt");
+const actual_data = @embedFile("./data/day09.txt");
 // const data = test_data;
 const data = actual_data;
 

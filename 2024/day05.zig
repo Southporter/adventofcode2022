@@ -32,7 +32,7 @@ const test_data =
     \\97,13,75,29,47
 ;
 
-const actual_data = @embedFile("./day05.txt");
+const actual_data = @embedFile("./data/day05.txt");
 
 // const data = test_data;
 const data = actual_data;

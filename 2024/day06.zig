@@ -14,7 +14,7 @@ const test_data =
     \\......#...
 ;
 
-const actual_data = @embedFile("./day06.txt");
+const actual_data = @embedFile("./data/day06.txt");
 
 // const data = test_data;
 const data = actual_data;
