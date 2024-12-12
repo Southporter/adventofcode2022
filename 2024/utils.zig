@@ -57,5 +57,19 @@ pub fn Coord(comptime T: type) type {
     return struct {
         row: T,
         col: T,
+        const Self = @This();
+
+        pub fn up(self: Self) Self {
+            return .{ .row = self.row - 1, .col = self.col };
+        }
+        pub fn down(self: Self) Self {
+            return .{ .row = self.row + 1, .col = self.col };
+        }
+        pub fn left(self: Self) Self {
+            return .{ .row = self.row, .col = self.col - 1 };
+        }
+        pub fn right(self: Self) Self {
+            return .{ .row = self.row, .col = self.col + 1 };
+        }
     };
 }
