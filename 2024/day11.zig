@@ -6,38 +6,44 @@ const test_data = "125 17";
 const actual_data = "0 27 5409930 828979 4471 3 68524 170";
 const data = actual_data;
 
-const BUF_SIZE = 1024 * 1024 * 400;
+const Line = std.AutoArrayHashMap(usize, usize);
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
-    log.debug("buf size: {d}", .{BUF_SIZE});
-    var buf1 = try allocator.alloc(u64, BUF_SIZE);
-    var buf2 = try allocator.alloc(u64, BUF_SIZE);
+    var line1 = Line.init(allocator);
+    const line2 = Line.init(allocator);
 
     var iter = std.mem.tokenizeScalar(u8, data, ' ');
-    var count: usize = 0;
     while (iter.next()) |token| {
         const num = try std.fmt.parseInt(u64, token, 10);
-        buf1[count] = num;
-        count += 1;
+        try line1.put(num, 1);
     }
-    log.debug("Initial line: {d}", .{buf1[0..count]});
 
     const stdout = std.io.getStdOut().writer();
-    var read = buf1[0..];
-    var write = buf2[0..];
+    var read = line1;
+    var write = line2;
     for (0..75) |i| {
-        count = blink(read, count, write);
+        write.clearRetainingCapacity();
+        try blink(&read, &write);
 
         //log.debug("Line after {d}: {d}", .{ i + 1, write[0..count] });
-        if (i == 24) try stdout.print("Part 1: {d}\n", .{count});
+        if (i == 24) try stdout.print("Part 1: {d}\n", .{count(write)});
 
         const tmp = read;
         read = write;
         write = tmp;
     }
 
-    try stdout.print("Part 2: {d}\n", .{count});
+    try stdout.print("Part 2: {d}\n", .{count(read)});
+}
+
+fn count(map: Line) usize {
+    var iter = map.iterator();
+    var c: usize = 0;
+    while (iter.next()) |entry| {
+        c += entry.value_ptr.*;
+    }
+    return c;
 }
 
 fn split(num: u64, digits: u64) [2]u64 {
@@ -55,25 +61,28 @@ test "split" {
     try std.testing.expectEqual([2]u32{ 12345, 6789 }, split(1234506789, 10));
 }
 
-fn blink(read: []const u64, count: usize, write: []u64) usize {
-    var i: usize = 0;
-
-    for (read[0..count]) |num| {
-        defer i += 1;
+fn blink(read: *Line, write: *Line) !void {
+    var iter = read.iterator();
+    while (iter.next()) |entry| {
+        const num = entry.key_ptr.*;
         if (num == 0) {
-            write[i] = 1;
+            const current_1s = write.get(1) orelse 0;
+
+            try write.put(1, current_1s + entry.value_ptr.*);
             continue;
         }
         const num_digits = std.math.log10(num) + 1;
         if (num_digits & 0x01 == 0) {
             const after = split(num, num_digits);
+            var existing = write.get(after[0]) orelse 0;
+            try write.put(after[0], existing + entry.value_ptr.*);
 
-            write[i] = after[0];
-            i += 1;
-            write[i] = after[1];
+            existing = write.get(after[1]) orelse 0;
+            try write.put(after[1], existing + entry.value_ptr.*);
             continue;
         }
-        write[i] = num * 2024;
+        const next = num * 2024;
+        const existing = write.get(next) orelse 0;
+        try write.put(next, existing + entry.value_ptr.*);
     }
-    return i;
 }
